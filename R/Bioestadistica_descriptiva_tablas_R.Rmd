@@ -1,0 +1,382 @@
+---
+title: "Resolución Actividad 2 máster Bioinformática UNIR (2025)"
+author: "Pedro Manuel Rodríguez Santos"
+date: "2025-12-14"
+output: html_document
+---
+
+# **Objetivo**
+
+La finalidad de esta actividad es aplicar los conceptos aprendidos sobre bioestadística descriptiva a través del archivo MUBioinfo_dataset_genes_oct2025.csv, que contiene información de la expresión de 30 genes en 65 pacientes, cada uno con distintos tipos de tratamiento y características tumorales. El objetivo principal es comprobar la normalidad de la distribución de la expresión de los genes para realizar los supuestos estadísticos necesarios.
+Posteriormente, se van a calcular los descriptivos de la base de datos de las variables bioquímicas, síntomas, variables sociodemográficas y de los genes en: 1) función del tratamiento y del tipo de extensión tumoral; 2) según la edad categorizada por la mediana.
+En la tabla descriptiva en función del tratamiento y el tipo de extensión tumoral, se deben reflejar las medias y las desviaciones estándar en caso de ser datos paramétricos o medianas y rangos intercuartílicos si son datos no paramétricos, y ***el valor p*** que hace referencia al contraste de hipótesis correspondiente a cada una de las variables de la tabla descriptiva para determinar si existen diferencias significativas entre ellas.
+En la tabla según la edad categorizada por la mediana se realizara el mismo proceso que el anteriormente mencionado.
+
+## Ejercicio 1
+
+Se va comprobar la normalidad en la distribución de la expresión de los diferentes genes. Posteriormente, se van a realizar histogramas para visualizar la frecuencia de los diferentes genes para interpretrar la distribución de los datos por cada variable en función del tipo de distribución que se obtenga: normal o asimétrica. También se va a realizar un test estadistico Skewness para verificar si la asimetria es positiva o negativa.
+
+
+```{r setup}
+
+#Se cargan las librerias necesarias para la actividad
+library (dplyr)       # para manipulacion de datos
+library (ggplot2)     # para realizar graficos
+library (gtsummary)   # para realizar tablas
+library (gt)          # para realizar tablas
+library (gridExtra)   # para organizar y combinar multiples graficos 
+library (nortest)     # para test Shapiro-Wilk y Anderson-Darling
+library (psych)       # para el test Skewness
+library(stats)        # para el test Wilcox-Mann-Whitney
+library (moments)     # para el test skew
+library (car)         # para el test ANOVA, pero que finalmente no se va a utilizar
+
+# Se establece el directorio de trabajo
+setwd("F:/UNIVERSIDAD/UNIR/BIOINFORMATICA/R/ACTIVIDAD 2")
+
+# Se guarda en la variable df la información del archivo
+df <- read.csv("MUBioinfo_dataset_genes_oct2025.csv")
+
+# Se genera una variable con los datos y nombres de los genes
+genes_df <- df %>% select(starts_with("AQ_"))
+genes <- names(genes_df)
+
+# Se realiza una funcion para realizar las pruebas de normalidad de los genes
+normalidad <- sapply(genes, function(g){
+  x <- df[[g]];
+  if(length(x) > 50){
+    p <- ad.test(x)$p.value
+  } else {
+    p <- shapiro.test(x)$p.value
+  }
+  return(p >= 0.05)   # TRUE = normal
+})
+
+# Se elabora la tabla modelo 1 con los datos de los genes, el test utilizado en función de los datos, el valor p y la interpretación de los resultados
+tabla_modelo1_gt <- data.frame(
+  Variable = genes,
+  Test_utilizado = ifelse(nrow(df) > 50, "Anderson-Darling", "Shapiro-Wilk"),
+  Valor_p = sapply(genes, function(g){
+    x <- df[[g]]; x <- x[!is.na(x)]
+    p <- if(length(x) > 50) ad.test(x)$p.value else shapiro.test(x)$p.value
+  }),
+  Interpretacion = ifelse(normalidad, "Compatible con normalidad", "No normal")
+) %>%
+  gt() %>%
+    tab_header(
+    title = md("**Tabla modelo 1. Pruebas de normalidad de los genes**")
+  ) %>%
+    cols_label(
+    Variable = "Variable",
+    Test_utilizado = "Test utilizado",
+    Valor_p = "Valor p",
+    Interpretacion = "Interpretación"
+  ) %>%
+    tab_style(
+    style = cell_text(weight = "bold", style = "italic", size = px(20)),
+    locations = cells_title(groups = "title")
+  ) %>%
+    tab_style(
+    style = cell_text(size = px(14)),
+    locations = cells_body()
+  ) %>%
+    tab_style(
+    style = cell_text(weight = "bold", size = px(16)),
+    locations = cells_column_labels()
+  ) %>%
+    cols_width(
+    Variable ~ px(220),
+    everything() & !Variable ~ px(150)
+  )
+tabla_modelo1_gt
+```
+
+
+
+
+**HISTOGRAMAS FRECUENCIAS DE EXPRESIÓN DE CADA GEN**
+
+
+
+```{r cars}
+
+# Se crean los gráficos para cada gen, usando el nombre de la columna dinámicamente
+graph <- list()
+for (i in 1:length(genes)) {
+  graph[[genes[i]]] <- ggplot(genes_df, aes(x = .data[[genes[i]]])) + 
+   geom_histogram(aes(y = ..density..), color = "black", fill= "white", alpha = 0.4, position = "identity", bins = 30) +
+    labs(title = paste("Histograma de", genes[i]), 
+         x = genes[i], 
+         y = "Frecuencia") +
+    scale_x_continuous(breaks = seq(0, 1, by = 0.5))+
+    theme_classic() +
+    theme(plot.title = element_text(hjust = 0.5, face = "bold", size=6),
+          axis.title.x = element_text(size = 7, face = "bold"),
+          axis.title.y = element_text(size = 7, face = "bold")) +
+    geom_density(lwd = 1, colour = 4, fill = 4, alpha = 0.25)
+}  
+n <- length(graph)
+block_size <- 15
+blocks <- ceiling(n / block_size)
+
+# Se realizan bloques para la visualización de los gráficos
+for(b in 1:blocks){
+  start <- (b - 1) * block_size + 1
+  end <- min(b * block_size, n)
+  
+  # Se selecciona el bloque de gráficos
+  block_graph <- graph[start:end]
+  
+  # Mostrar en grilla de 5x3
+  do.call(grid.arrange, c(block_graph, ncol =5 , nrow =3))
+}
+```
+
+
+
+
+**TIPO DE ASIMETRÍA**
+
+
+
+```{r cars2}
+
+# Se genera una tabla con los genes y los valores para realizar el estadístico Skewness
+skew_values <- sapply(genes, function(g) {
+    x <- df[[g]]
+    x <- x[!is.na(x)]          # eliminar NAs
+    skewness(x)                 # calcular skewness
+})
+skew_df <- data.frame(
+        Genes = genes,
+        Skewness = round(skew_values, 3)
+)
+row.names(skew_df) <- NULL
+skew_df
+```
+
+
+
+***CONCLUSIONES EN LA PRUEBA DE NORMALIDAD***
+
+
+La tabla muestra los resultados en la prueba de normalidad para los 30 genes del archivo utilizado, en la cual, el test utilizado ha sido el de Anderson-Darling porque el tamaño de las muestras para cada gen es mayor de 50.
+Mediante esta prueba estadística, se evalúa si los datos de cada gen siguen una distribución normal o asimétrica a través de los resultados obtenidos en la columna ***“Valor_p”***, y que es resumida en la columna de ***"Interpretación"***.
+En todos los casos, los p-valores son extremadamente bajos, con magnitudes que van desde 10⁻¹⁴ hasta 10⁻¹⁹, mucho menores que el umbral típico de significancia de 0.05. Al ser todos los valores <0.05, significa que para ninguno de los genes se puede asumir normalidad, es decir, la distribución de los valores de expresión de cada gen presenta una distribución asimétrica. Además, en la representación gráfica de la expresión genética se puede observar que ningún gen presenta normalidad en la distribución de los datos.
+Mediante la prueba de Skewness, también se puede apreciar que tipo de asimetría tiene cada gen. Para todos es una asimetría positiva, ya que son valores >0, excepto el gen VEGFA, que muestra un valor <0 y por lo tanto presenta asimetría negativa. Además, para la mayoría de los genes, el valor del estadístico de la asimetría es muy bajo y cercano a 0, por lo que es una asimetría bastante baja; pero hay otros genes con valores cercanos al 1 que indican una asimetría bastante más sesgada, como MMP9, PTEN, MYC, KRAS, AKT1,CDKN2A,PDCD1, CTLA4, HLAA Y CASP3.
+Estos resultados, van a condicionar la elección de métodos estadísticos en posteriores análisis comparativos, ya que se deberá elegir el uso de pruebas paramétricas o no paramétricas.
+
+
+
+
+## Ejercicio 2
+
+En este ejercicio se va a calcular y analizar estadísticas descriptivas de los valores sin transformar (media + desviación estándar si son paramétricas, mediana + rango intercuartílico (p25-p75) si no lo son) de las variables bioquímicas, síntomas, sociodemográficas y de los genes.
+Además, en función del tratamiento (1er nivel) y de la extensión tumoral (2º nivel), se  va a crear una tabla descriptiva únicamente con las variables de genes. Para ello, se va a utilizar el test de Kruskal-Wallis, ya que hay dos variables de agrupación, los genes tienen una distribución no normal y la muestra para los grupos es muy pequeña <30, y por lo tanto se asume que son no parámetricas.
+
+
+**NORMALIDAD EN VARIABLES BIOQUÍMICAS, GENES, SÍNTOMAS Y SOCIODEMOGRÁFICAS**
+
+
+Para valorar la normalidad de todas las variables, solo se escogen aquellas que son continuas. El resto de variables son categóricas y no se puede analizar la normalidad, y por ello, se toman como variables no paramétricas que van a ser utilizadas para agrupar observaciones en los análisis estadísticos.
+A continuación se muestra una tabla con los resultados de valoración de la normalidad y las estadísticas descriptivas en todos los genes, en las variables bioquímicas (glucosa, leucocitos, linfocitos, neutrofilos, chol, hdl, hierro, iga, ige, igg, ign, ldl, pcr, transferrina, trigliceridos, cpk) y en las sociodemográficas que son continuas (score_dieta, calidad_fisica, calidad_mental, edad). Para las variables que presentan normalidad (paramétricas) se calcula la media y la desviación estándar, y si son asimétricas (no paramétricas) se valora la mediana y el rango intercuartílico (p25-p75).
+
+
+```{r cars3}
+
+# Se realiza una funcion para realizar las pruebas de normalidad de los genes, variables bioquímicas y sociodemográficas.
+biogenes_df <- df %>% select(starts_with("AQ_"), glucosa, leucocitos, linfocitos, neutrofilos, score_dieta, chol, hdl, hierro, iga, ige, igg, ign, ldl, pcr, transferrina, trigliceridos, cpk, calidad_fisica, calidad_mental, edad)
+biogenes <- names (biogenes_df) 
+norm <- sapply(biogenes, function(g){
+  x <- df[[g]];
+  if(length(x) > 50){
+    p <- ad.test(x)$p.value
+  } else {
+    p <- shapiro.test(x)$p.value
+  }
+  return(p >= 0.05)   # TRUE = normal
+})
+
+# Se elabora una tabla con las pruebas de normalidad y estadísticas descriptivas de los genes, variables bioqúimicas y sociodemográficas junto con el test utilizado (Anderson-Darling o Shapiro-Wilk), el valor p y la interpretación de los resultados
+tabla <- data.frame(
+  Variable = biogenes,
+  Test_utilizado = ifelse(nrow(df) > 50, "Anderson-Darling","Shapiro-Wilk"),
+    Valor_p = sapply(biogenes, function(g){
+    x <- df[[g]]; x <- x[!is.na(x)]
+    p <- if(length(x) > 50) ad.test(x)$p.value else shapiro.test(x)$p.value
+  }),
+  Interpretacion = ifelse(norm, "Compatible con normalidad", "No normal"),
+  `Median/Mean` = sapply(seq_along(biogenes), function(i){
+    x <- df[[biogenes[i]]]
+    x <- x[!is.na(x)]
+    if(norm[i]) {
+      round(mean(x), 1)
+    } else {
+      round(median(x), 1)
+    }
+  }),
+  
+  `sd/IQR` = sapply(seq_along(biogenes), function(i){
+    x <- df[[biogenes[i]]]
+    x <- x[!is.na(x)]
+    if(norm[i]) {
+      round(sd(x), 1)
+    } else {
+      round(IQR(x), 1)
+    }
+  })
+)
+gt(tabla) %>%
+  tab_header(
+    title = ("Pruebas de normalidad y estadísticas descriptivas de los genes, variables bioqúimicas y sociodemográficas"))  %>%
+    tab_style(
+  style = cell_text(size = px(20), weight = "bold", style = "italic"),
+    locations = cells_title(groups = "title")) %>%
+    tab_style(
+  style = cell_text(size = px(12)),
+    locations = cells_body()) %>%
+  tab_style(
+    style = cell_text(size = px(16), weight= "bold"),
+    locations = cells_column_labels()) %>%
+  cols_align(
+    align = "center",
+    columns = c(Valor_p, Interpretacion)
+)
+```
+  
+
+
+La tabla muestra que todos los genes tienen parametros no normales. En las variables bioquímicas se observa que la glucosa, leucocitos, neutrofilos, hierro, iga, ige, igg, ign, ldl, pcr, triglicéridos y cpk tienen una distribución no normal, y que linfocitos, chol, hdl y transferrina son compatibles con una distribución normal. Y en las sociodemográficas presentan normalidad la edad y la calidad física, y no normalidad la calidad mental, y el score_dieta.
+
+  
+  
+**ESTADÍSTICAS DESCRIPTIVAS DE LOS GENES EN FUNCIÓN DEL TRATAMIENTO Y LA EXTENSIÓN TUMORAL**
+
+
+```{r cars4}
+
+# Se genera la tabla modelo 2 para calcular y analizar estadísticas descriptivas solo de los genes sin transformar en función del tratamiento (1er nivel) y de la extensión tumoral (2º nivel)
+
+tabla_modelo2 <- df %>%
+  select(tratamiento, extension, all_of(genes)) %>%
+  tbl_strata(
+    strata = tratamiento,
+    .tbl_fun = ~ {
+      # columnas continuas del subconjunto
+      cont_vars <- names(.x)[sapply(.x, is.numeric)]
+      
+      # crear lista de estadísticas solo para esas columnas
+      stat_list <- setNames(
+        lapply(cont_vars, function(v){
+          if(norm[v]) "{mean} ({sd})" else "{median} ({p25}–{p75})"
+        }),
+        cont_vars
+      )
+      
+      .x %>%
+        tbl_summary(
+          by = extension,
+          statistic = stat_list,
+          digits = all_continuous() ~ 2
+        ) %>%
+        add_p(
+          test = all_continuous() ~ "kruskal.test",
+          pvalue_fun = ~ style_pvalue(.x, digits = 3)
+        )
+    }
+  ) %>%
+    modify_caption("<span style='font-size:20px; font-weight:bold;'>Tabla modelo 2. Estadísticas descriptivas de los genes en función del tratamiento y la extensión tumoral</span>"
+  ) %>%
+  modify_header(label ~ "**Variable**")
+tabla_modelo2
+```
+
+
+
+
+***CONCLUSIONES EN ESTADÍSTICO DE KRUSKAL-WALLIS***
+
+
+Para la interpretación de los resultados, se asume que los genes presentan una distribución no paramétrica y por lo tanto se realiza el estadístico para las categorías tratamiento y extensión tumoral mediante el test de Kruskal-Wallis. En la tabla se muestran los valores de la mediana y el rango intercuartílico de todos lo genes en función de ambas categorías junto a los valores p del test.
+Se analizan los resultados de los p_values de cada gen para valorar si cumple la hipotesis nula (H0), en la cual no hay diferencias sigficativas entre las medianas; o si hay que rechazarla y asumir la hipotesis alternativa (H1) donde si existen diferencias significativas Para ello, se valora el nivel de significancia de 0.05: si es valor de p es mayor se aceptaria H0 y si es menor se admite H1.
+Los resultados muestran de forma general que son mucho más bajos lo p_values en la extensión tumoral localizada que en metastásico para ambos tratamientos (placebo y fármaco). 
+Los genes que presentan un p-value > 0.05 en ambos tratamientos son estadísticamente no significativos para ambos tratamientos y con valores similares según la extensión tumoral, por lo tanto, es frecuente que la expresión genética sea estable (ej.: CTL4, HLLA).
+También hay genes con un p_value < 0.05 tanto en el grupo placebo con en el fármaco, en los cuales, la expresión génica sería estable en función del tratamiento. Pero la expresión génica es significativamente mayor en tumores metastásicos en comparación con los localizados debido a la diferencia en los valores de la mediana y el IQR e independientemente del tratamiento (ej.: ACTB, GAPDH, B2M).
+Otros genes, en cambio, muestran diferencias significativas en los p_values según el tratamiento y también diferencias entre las extensiones tumorales. Cuando el tratamiento es el fármaco, los p_values son > 0.05, y por lo tanto no significativas, manteniendo una expresión génica estable para ambas extensiones tumorales; mientras que con el placebo, los p_values son < 0.05, siendo significativas las diferencias de expresión, siendo mayor en el metastásico que en el localizado. Además, la diferencia entre los valores p en función del tratamiento, indican que es posible que esto influya en la expresión génica. Estos cambios de expresión se observan en los genes asociados al cancer: ESR1, HER2, BRCA1, BCR2, KI67, GATA3, FOXA1, CCND1, CDH1 y TP53.  
+Algunos genes de referencia como ACTB o GAPDH (housekeeping), muestran diferencias significativas (p_value < 0.05) en su expresión según la extensión tumoral, pero se mantienen estables en ambos tratamientos (mediana e IQR similares tanto en placebo como en fármaco).
+
+
+
+## Ejercicio 3
+
+Por último, se va a calcular y analizar estadísticas descriptivas solo para las variables de los genes, como en el anterior ejercicio, pero en función de la edad para dos categorías según la mediana: categoría 1: edad <percentil 50 de edad; categoría 2: edad >=percentil 50 de edad).
+Asumiendo que los genes son variables independientes, no normales y con un tamaño muestral pequeño para cada una de ellas (N≈30), se asume que son no paramétricas, por lo que se va a realizar el test estadístico con el método de Wilcoxon-Mann-Whitney.
+
+
+**ESTADÍSTICAS DESCRIPTIVAS DE LOS GENES SEGÚN LA EDAD CATEGORIZADA POR LA MEDIANA**
+
+
+
+```{r cars5}
+
+# Se generan las variables para la edad categorizada por la mediana
+p50 <- median(df$edad, na.rm = TRUE)
+
+df <- df %>%
+  mutate(
+    edad_cat = factor(ifelse(edad < p50, "< P50", "≥ P50"))
+  )
+  
+names(norm) <- genes
+
+# Crear lista solo para los genes usados
+stat_list <- setNames(
+  lapply(genes, function(g) {
+    if (norm[g]) "{mean} ({sd})"
+    else         "{median} ({p25}–{p75})"
+  }),
+  genes
+)
+tabla_modelo3 <- df %>%
+  select(edad_cat, all_of(genes)) %>%
+  tbl_summary(
+    by = edad_cat,
+    statistic = stat_list,
+    digits = all_continuous() ~ 2
+  ) %>%
+  add_p(
+    test = all_continuous() ~ "wilcox.test",
+    pvalue_fun = ~ style_pvalue(.x, digits = 3)
+  ) %>%
+  modify_caption(
+    "<span style='font-size:20px; font-weight:bold;'>
+    Tabla modelo 3. Expresión génica según edad categorizada por mediana
+    </span>"
+  ) %>%
+  modify_header(label ~ "**Variable**"
+  ) 
+tabla_modelo3_gt <- tabla_modelo3 %>%
+  as_gt() %>%
+  gt::cols_width(
+    label ~ gt::px(150),      
+    everything() ~ gt::px(200)  
+  ) %>%
+  gt::tab_options(
+    table.font.size = gt::px(14),  
+    data_row.padding = gt::px(8)    
+  )
+
+tabla_modelo3_gt
+```
+
+
+
+
+***CONCLUSIONES EN ESTADÍSTICO DE WILCOXON-MANN-WHITNEY***
+
+
+La mayoría de los genes tienen un p_value > 0.05, por lo que no presentan diferencias significativas entre los grupos de edad categorizadas por la medianay por lo tanto, indica que la edad no afecta a su expresión genética.
+Pero hay dos excepciones, CASP3 Y PTEN con un p_value < 0.05, que si muestran diferencias, y por lo tanto, la edad si afecta a su expresión génica, siendo menor en el grupo de mayor edad. Esto podría indicar que la edad esta asociada a la disminución en la expresión de estos genes específicos.
+También se puede recalcar que el gen MYC presenta una tendencia a disminuir su expresión génica a mayor edad, pero al ser el p_value > 0.05, no es significativa.
+Los genes que presentan diferencias significativas, están relacionados entre sí, cuya función es la regulación celular y el control del crecimiento tumoral. El gen PTEN previene que las células crezcan demasiado y CASP3 elimina estas células cuando son problemáticas, por lo que son fundamentales para prevenir el cáncer y otras enfermedades malignas. Esto significa que, a medida que se avanza en edad, estos genes pueden perder su eficacia y producirse una disminución de su expresión, lo que puede conducir a un mayor riesgo de contraer ciertas enfermedades malignas como el cáncer.
+Igualmente importante es el gen MYC, que presenta una disminución de expresión con la edad y es importante tenerle en cuenta aunque no presente diferencia significativa, ya que si se produce una desregulación en su expresión se convierte en un oncogen que promueve el crecimiento tumoral.
