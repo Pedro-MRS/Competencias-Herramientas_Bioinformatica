@@ -1,33 +1,8 @@
 ###########################################################
-##### ACTIVIDAD 1 – CONCEPTOS FUNDAMENTALES DE PYTHON #####
+##### 		CONCEPTOS FUNDAMENTALES DE PYTHON 		  #####
 ###########################################################
 
-### EJERCICIO 1 ###
-	# A.) Se genera un ambiente de Conda con el nombre actividad1» y se instalan las librerías Pandas, Matplotlib y Seaborn, además del IDE Spyder
-
-        ## conda create --name actividad1 pandas matplotlib seaborn spyder
-
-	# B.) Se instala la version mas reciente de Spyder compatible con la version de Python que está en el entorno de Conda
-
-        ## conda activate actividad1    # se activa el entorno de la actividad
-        ## python --version   # se revisa que version de python está en el entorno
-        ## conda list spyder  # se verifica la version instalada de Spyder
-        # la version de python es la 3.14.3 y la version de spyder es la 6.1.3, por lo que la version mas reciente de spyder compatible con la version de python ya está instalada
-
-	# C.) 
-        	## para comprobar los ambientes creados en Conda, escribimos en la consola:
-                # conda env list
-                
-        ## para comprobar las librerías instaladas, primero activamos el ambiente creado: 
-                #conda activate actividad1   # se activ el ambiente creado
-                # conda list   # para verificar las librerías instaladas
-        ## para comprobar librerías especificamente 
-                # conda list pandas 
-                # conda list matplotlib 
-                # conda list seaborn
-                # conda list spyder
-
-### EJERCICIO 2 ###
+### PRACTICA 1 ###
 
     # A.) Se examina manualmente el archivo 1tup.pdb con un editor de texto
         ## El título descriptivo de esta estructura (TITLE) es:
@@ -98,7 +73,7 @@ plt.ylabel("Frecuencia aminoacidos", fontsize=12)
 plt.show()
 
 
-### EJERCICIO 3 ###
+### PRACTICA 2 ###
 
 
     # A.) Leer el archivo actividad.csv y cambiar el nombre de las columnas por: id, dieta, pulsaciones, tiempo y actividad
