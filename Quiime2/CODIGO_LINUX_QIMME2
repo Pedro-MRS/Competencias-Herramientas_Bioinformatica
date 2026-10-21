@@ -1,1 +1,190 @@
+### Paso 1:  Obtener los datos
+## En este paso, se prepara el entorno de trabajo y se descarga los archivos necesarios para el análisis. Esto incluye:
+#	El archivo de metadatos, que contiene la información sobre cada muestra del estudio.
+#	Las secuencias crudas, que incluyen los archivos forward, reverse y los códigos de barras (barcodes) asociados.
+#	Creación del entorno de trabajo.
+
+wget https://data.qiime2.org/distro/amplicon/qiime2-amplicon-2023.9-py38-linux-conda.yml
+conda env create -n qiime2-amplicon-2023.9 --file https://data.qiime2.org/distro/amplicon/qiime2-amplicon-2023.9-py38-linux-conda.yml
+conda activate qiime2-amplicon-2023.9
+
+## Crear sesión de conda con herramienta Qiime2
+conda env create -n qiime2-amplicon-2024.10 --file https://data.qiime2.org/distro/amplicon/qiime2-amplicon-2024.10-py310-linux-conda.yml
+conda activate qiime2-amplicon-2024.10
+
+## Generar path del proyecto
+#projectDir="~/Qiime2"
+projectDir="/mnt/c/Users/laura/Documents/Unir/Omicas/Actividad3"
+projectDir="/mnt/c/Users/laura/Documents/Unir/Omicas/Qiime2"
+
+## Generar árbol de directorios en el directorio
+mkdir $projectDir/qiime2-atacama
+cd $projectDir/qiime2-atacama
+
+## Descarga del archivo de metadatos. Se guardan los datos en el directorio que creamos y se guarda el archivo con el nombre «sample-metadata.tsv»:
+wget -O "sample-metadata.tsv" https://data.qiime2.org/2023.9/tutorials/atacama-soils/sample_metadata.tsv
+# o:
+curl -sL https://data.qiime2.org/2023.9/tutorials/atacama-soils/sample_metadata.tsv > "sample-metadata.tsv"
+
+## Descarga de las secuencias: para organizar mejor los archivos, se crea un subdirectorio para las secuencias: 
+mkdir emp-paired-end-sequences
+wget -O "emp-paired-end-sequences/forward.fastq.gz" https://data.qiime2.org/2023.9/tutorials/atacama-soils/10p/forward.fastq.gz
+wget -O "emp-paired-end-sequences/reverse.fastq.gz" https://data.qiime2.org/2023.9/tutorials/atacama-soils/10p/reverse.fastq.gz
+wget -O "emp-paired-end-sequences/barcodes.fastq.gz" "https://data.qiime2.org/2023.9/tutorials/atacama-soils/10p/barcodes.fastq.gz"
+# o también:
+curl -sL “https://data.qiime2.org/2023.9/tutorials/atacama-soils/10p/forward.fastq.gz“ > "emp-paired-end-sequences/forward.fastq.gz"
+curl -sL “https://data.qiime2.org/2023.9/tutorials/atacama-soils/10p/reverse.fastq.gz“ > "emp-paired-end-sequences/reverse.fastq.gz"
+curl -sL "https://data.qiime2.org/2023.9/tutorials/atacama-soils/10p/barcodes.fastq.gz" > "emp-paired-end-sequences/barcodes.fastq.gz"
+
+### Paso 2. Creación el artefacto de qiime2 con las secuencias
+## Generación del artefacto:
+qiime tools import --type EMPPairedEndSequences --input-path emp-paired-end-sequences --output-path emp-paired-end-sequences.qza
+
+## Archivo generado:
+emp-paired-end-sequences.qza
+
+### Paso 3. Demultiplexar las reads
+## Paso para separar o dividir las secuencias de ADN o ARN obtenidas en la secuenciación en base a las secuencias de códigos de barras (barcodes o índices) que se han incorporado a cada muestra.
+## Para distinguir las secuencias de las diferentes muestras, se les asignan identificadores únicos, conocidos como barcodes o índices. Estos códigos permiten identificar a qué muestra pertenece cada secuencia. Para ello, se necesita el archivo de metadatos e indicar la columna que contiene los barcodes de cada muestra, denominada barcode-sequence. En este caso, los barcodes de las lecturas son el complemento inverso de los registrados en el archivo de metadatos, por lo que es necesario incluir la opción --p-rev-comp-mapping-barcodes.
+
+qiime demux emp-paired --m-barcodes-file sample-metadata.tsv --m-barcodes-column barcode-sequence --p-rev-comp-mapping-barcodes --i-seqs emp-paired-end-sequences.qza --o-per-sample-sequences demux-full.qza --o-error-correction-details demux-details.qza
+
+## Archivos generados:
+demux-full.qza
+demux-details.qza
+
+### Paso 4. Crear una submuestra
+## Se selecciona un subconjunto de datos. Aquí, se decreta el 30 % de los datos presentes en la muestra.
+
+qiime demux subsample-paired --i-sequences demux-full.qza --p-fraction 0.3 --o-subsampled-sequences demux-subsample.qza
+
+## Visualizar el subconjunto para explorar los datos restantes: 
+
+qiime demux summarize --i-data demux-subsample.qza --o-visualization demux-subsample.qzv
+
+## Archivos generados:
+demux-subsample.qza
+demux-subsample.qzv
+
+## Para ver los resultados de los archivos qzv vamos a https://view.qiime2.org/
+
+### Paso 5. Filtrar muestras que tienen menos de 100 reads (lecturas).
+## Se filtran las muestras.
+## Se exporta la información de la submuestra: 
+qiime tools export --input-path demux-subsample.qzv --output-path ./demux-subsample/
+## Se filtran las muestras con menos de 100 reads:
+qiime demux filter-samples --i-demux demux-subsample.qza --m-metadata-file ./demux-subsample/per-sample-fastq-counts.tsv --p-where 'CAST([forward sequence count] AS INT) > 100' --o-filtered-demux demux.qza
+
+## Archivo generado:
+demux.qza
+
+### Paso 6. Revisar la calidad y realizar denoising.
+## Se evalua la calidad de las secuencias crudas para identificar posibles errores y asegurar el uso de las secuencias de alta calidad. El objetivo del denoising es obtener una representación más precisa de la comunidad microbiana. 
+## En este paso se cortan las 13 primeras bases de cada lectura y se seleccionan las secuencias de un largo de 150 nucleótidos. 
+# Se aplica DADA2:
+qiime dada2 denoise-paired --i-demultiplexed-seqs demux.qza --p-trim-left-f 13 --p-trim-left-r 13 --p-trunc-len-f 150 --p-trunc-len-r 150 --o-table table.qza --o-representative-sequences rep-seqs.qza --o-denoising-stats denoising-stats.qza
+
+
+# Archivos generados
+table.qza (tabla de OTUs, aquí llamados “features”)
+rep-seqs.qza (Secuencias de los OTUs)
+denoising-stats.qza (estadísticas de la remoción de ruido)
+# Generar resúmenes de los resultados:
+qiime feature-table summarize --i-table table.qza --o-visualization table.qzv --m-sample-metadata-file sample-metadata.tsv
+qiime feature-table tabulate-seqs --i-data rep-seqs.qza --o-visualization rep-seqs.qzv
+qiime metadata tabulate --m-input-file denoising-stats.qza --o-visualization denoising-stats.qzv
+
+# Visualizaciones:
+table.qzv
+denoising-stats.qzv
+rep-seqs.qzv
+
+## La tabla de abundancia es esencial para el análisis de la composición taxonómica de la comunidad microbiana en las muestras.
+
+### Paso 7. Generar un árbol para el análisis de diversidad filogenética.
+
+qiime phylogeny align-to-tree-mafft-fasttree --i-sequences rep-seqs.qza --o-alignment aligned-rep-seqs.qza --o-masked-alignment masked-aligned-rep-seqs.qza --o-tree unrooted-tree.qza --o-rooted-tree rooted-tree.qza
+
+## Archivo generado:
+aligned-rep-seqs.qza
+masked-aligned-rep-seqs.qza
+unrooted-tree.qza
+rooted-tree.qza
+
+## Exportación del árbol en formato Newick (.nwk). Para visualizar el árbol en microreact (o cualquier plataforma para árboles filogenéticos):
+qiime tools export --input-path rooted-tree.qza --output-path Visualización/
+
+## Archivo generado. tree.nwk
+
+ 
+
+### Paso 8. Cálculo de diversidad alfa y beta.
+
+qiime diversity core-metrics-phylogenetic --i-phylogeny rooted-tree.qza --i-table table.qza --p-sampling-depth 465 --m-metadata-file sample-metadata.tsv --output-dir core-metrics-results
+
+# Archivos generados:
+core-metrics-results/faith_pd_vector.qza
+core-metrics-results/unweighted_unifrac_distance_matrix.qza
+core-metrics-results/bray_curtis_pcoa_results.qza
+core-metrics-results/shannon_vector.qza
+core-metrics-results/rarefied_table.qza
+core-metrics-results/weighted_unifrac_distance_matrix.qza
+core-metrics-results/jaccard_pcoa_results.qza
+core-metrics-results/weighted_unifrac_pcoa_results.qza
+core-metrics-results/observed_features_vector.qza
+core-metrics-results/jaccard_distance_matrix.qza
+core-metrics-results/evenness_vector.qza
+core-metrics-results/bray_curtis_distance_matrix.qza
+core-metrics-results/unweighted_unifrac_pcoa_results.qza
+
+# Visualizaciones:
+core-metrics-results/unweighted_unifrac_emperor.qzv
+core-metrics-results/jaccard_emperor.qzv
+core-metrics-results/bray_curtis_emperor.qzv
+core-metrics-results/weighted_unifrac_emperor.qzv
+
+#	Análisis por grupos de metadatos: en este paso, podemos agrupar los resultados de acuerdo con los metadatos, cambiando, después del parámetro “--i-alpha-diversity”, el archivo por el de otra métrica de diversidad, por ejemplo, core-metrics-results/ observed_features_vector.qza: 
+
+qiime diversity alpha-group-significance --i-alpha-diversity core-metrics-results/observed_features_vector.qza --m-metadata-file sample-metadata.tsv --o-visualization core-metrics-results/observed_features-group-significance.qzv
+ 
+qiime diversity alpha-group-significance --i-alpha-diversity core-metrics-results/evenness_vector.qza --m-metadata-file sample-metadata.tsv --o-visualization core-metrics-results/evenness-group-significance.qzv
+•	# El nombre de la visualización obtenida se verá así (observed_features_vector.qza-significance.qzv”): core-metrics-results/ observed_features_vector.qza-group-significance.qzv
+# (evenness_vector.qza-significance.qzv”): core-metrics-results/ evenness_vector.qza-group-significance.qzv
+
+## Análisis PERMANOVA de diversidad beta
+
+qiime diversity beta-group-significance --i-distance-matrix core-metrics-results/unweighted_unifrac_distance_matrix.qza --m-metadata-file sample-metadata.tsv --m-metadata-column transect-name --o-visualization core-metrics-results/unweighted-unifrac-transect-name-significance.qzv --p-pairwise
+
+# Visualizaciones: core-metrics-results/unweighted-unifrac-transect-name-significance.qzv
+#Gráfico PCoA: en el análisis del gráfico PCoA (análisis de coordenadas principales), el objetivo es visualizar la variación en la composición de especies entre muestras en un espacio bidimensional (o múltiples dimensiones). Este análisis utiliza los resultados de un análisis de PCoA aplicado a la matriz de distancias entre las muestras, lo que permite reducir la dimensionalidad de la matriz de distancias para representar las muestras en un espacio con dimensiones reducidas que captura la variación más importante. Cada punto en el gráfico representa una muestra y la distancia entre los puntos refleja la similitud o diferencia en la composición de especies. En este caso, algo similar al análisis anterior, pero aquí se tendrá que modificar el fichero “--i-pcoa” por alguno de los artefactos creados de pcoa (*_pcoa_results.qza) y “--p-custom-axes” por el nombre de una columna de metadatos de interés que, si hacemos qiime emperor plot –help observaremos que las columnas tienen que ser de tipo numérico.
+
+qiime emperor plot --i-pcoa core-metrics-results/unweighted_unifrac_pcoa_results.qza --m-metadata-file sample-metadata.tsv --p-custom-axes depth --o-visualization core-metrics-results/unweighted-unifrac-emperor-depth.qzv
+
+# Visualizaciones: core-metrics-results/unweighted-unifrac-emperor-depth.qzv
+
+### Paso 9. Análisis taxonómico.
+# Descarga manual:
+
+QIIME 2 Development Team. Greengenes 13_8 99% OTUs classifier (515F/806R region) [Internet]. QIIME 2 Library; [citado 2025 Sep 9]. Disponible en: https://data.qiime2.org/2023.9/common/gg-13-8-99-515-806-nb-classifier.qza 
+
+# Descarga con wget o curl:
+
+wget -O "gg-13-8-99-515-806-nb-classifier.qza" "https://data.qiime2.org/2023.9/common/gg-13-8-99-515-806-nb-classifier.qza"
+curl -sL "https://data.qiime2.org/2023.9/common/gg-2022-10-515f-806r-nb-classifier.qza" > "gg-2022-10-515f-806r-nb-classifier.qza"
+
+# Clasificación taxonómica:
+qiime feature-classifier classify-sklearn --i-classifier gg-13-8-99-515-806-nb-classifier.qza --i-reads rep-seqs.qza --o-classification taxonomy.qza
+
+# Crear tabla con taxonomía:
+
+qiime metadata tabulate --m-input-file taxonomy.qza --o-visualization taxonomy.qzv
+
+# Archivos generados:
+taxonomy.qza
+taxonomy.qzv
+
+#Creación de un gráfico de abundancia taxonómica:
+qiime taxa barplot --i-table table.qza --i-taxonomy taxonomy.qza --m-metadata-file sample-metadata.tsv --o-visualization taxa-bar-plots.qzv
+# Visualizaciones:
+taxa-bar-plots.qzv
 
