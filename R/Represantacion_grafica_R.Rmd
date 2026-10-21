@@ -1,0 +1,502 @@
+---
+title: "<center> **Representación gráfica de datos e interpretación de resultados** <center>"
+author: "Pedro Manuel Rodríguez Santos"
+date: "Noviembre 2025"
+output: html_document
+---
+
+# **Objetivo**
+
+La finalidad de esta actividad es interpretar los datos biológicos del archivo MUBioinfo_dataset_genes_oct2025.csv que contiene información sobre la expresión de 40 genes en 65 pacientes, generando gráficos adecuados a través de la herramienta *r*, y responder a las preguntas que se plantean mediante su análisis estadístico.
+
+## Ejercicio 1
+
+Mediante un diagrama de cajas o boxplot se interpreta la distribución de la expresión de los genes en función de su tratamiento. Los genes que se van a analizar son: AQ_ESR1, AQ_HER2, AQ_BRCA1, AQ_BRCA2, AQ_MKI67, AQ_GATA3, AQ_FOXA1, AQ_CCND1, AQ_CDH1, "AQ_TP53.
+Para ello se va a utilizar el paquete "dplyr" para leer los datos del archivo, , "ggplot2" para realizar los gráficos, y "patchwork" para unir en un único gráfico todos los diagramas obtenidos para cada gen.
+
+```{r cars, fig.width=50, fig.height=30}
+# Librerías que vamos a utilizar para los boxplot y los histogramas.
+
+library(dplyr)
+library(ggplot2)
+library(patchwork)
+```
+
+```{r cars2}
+# Se establece el directorio de trabajo.
+
+setwd("F:/UNIVERSIDAD/UNIR/BIOINFORMATICA/R/ACTIVIDAD 1")
+
+# Se genera una variable f con los datos del archivo.
+
+f <- list.files(pattern="MUBioinfo_dataset_genes_oct2025.csv", ignore.case=TRUE)[1]
+
+# Se genera otra variable df que lea los datos del archivo.
+
+df <- read.csv(f, fileEncoding="UTF-8-BOM", check.names=FALSE)
+
+## Se generan los gráficos box plot ##
+
+# Seleccionamos los datos a tratar y los ubicamos en los ejes del gráfico.
+
+box_1 <- ggplot(df, aes(x = tratamiento, y = AQ_esr1, fill = tratamiento)) +
+
+# Creamos el diagrama de cajas.
+  
+  geom_boxplot(outlier.color = "black", outlier.size = 2, width = 0.7) +
+  
+# Título de los ejes.
+  
+  labs(title = "Boxplot ESR1", x = "Tratamiento", y = "Expresión ESR1") +
+
+# Color de las cajas según el tratamiento
+  
+  scale_fill_manual(values = c("limegreen", "orangered")) +
+  
+# Color y distancia entre los puntos
+  
+  geom_jitter(color = "black", width = 0.2) +
+  
+# Se gestiona que el gráfico sea limpio.
+  
+  theme_minimal(base_size=8) +
+  
+# Tamaño y posición del título del diagrama.
+  
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+
+# A continuación están los códigos para realizar los gráficos del resto de genes.
+
+box_2 <- ggplot(df, aes(x = tratamiento, y = AQ_her2, fill = tratamiento)) +
+  geom_boxplot(outlier.color = "black", outlier.size = 2, width = 0.7) +
+  labs(title = "Boxplot HER2", x = "Tratamiento", y = "Expresión HER2") +
+  scale_fill_manual(values = c("limegreen", "orangered")) +
+  geom_jitter(color = "black", width = 0.2) +
+  theme_minimal(base_size=8) +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+
+box_3 <- ggplot(df, aes(x = tratamiento, y = AQ_brca1, fill = tratamiento)) +
+  geom_boxplot(outlier.color = "black", outlier.size = 2, width = 0.7) +
+  labs(title = "Boxplot BRCA1", x = "Tratamiento", y = "Expresión BRCA1") +
+  scale_fill_manual(values = c("limegreen", "orangered")) +
+  geom_jitter(color = "black", width = 0.2) +
+  theme_minimal(base_size=8) +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+
+box_4 <- ggplot(df, aes(x = tratamiento, y = AQ_brca2, fill = tratamiento)) +
+  geom_boxplot(outlier.color = "black", outlier.size = 2, width = 0.7) +
+  labs(title = "Boxplot BRCA2", x = "Tratamiento", y = "Expresión BRCA2") +
+  scale_fill_manual(values = c("limegreen", "orangered")) +
+  geom_jitter(color = "black", width = 0.2) +
+  theme_minimal(base_size=8) +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+
+box_5 <- ggplot(df, aes(x = tratamiento, y = AQ_mki67, fill = tratamiento)) +
+  geom_boxplot(outlier.color = "black", outlier.size = 2, width = 0.7) +
+  labs(title = "Boxplot MKI67", x = "Tratamiento", y = "Expresión MKI67") +
+  scale_fill_manual(values = c("limegreen", "orangered")) +
+  geom_jitter(color = "black", width = 0.2) +
+  theme_minimal(base_size=8) +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+
+box_6 <- ggplot(df, aes(x = tratamiento, y = AQ_gata3, fill = tratamiento)) +
+  geom_boxplot(outlier.color = "black", outlier.size = 2, width = 0.7) +
+  labs(title = "Boxplot GATA3", x = "Tratamiento", y = "Expresión GATA3") +
+  scale_fill_manual(values = c("limegreen", "orangered")) +
+  geom_jitter(color = "black", width = 0.2) +
+  theme_minimal(base_size=8) +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+
+box_7 <- ggplot(df, aes(x = tratamiento, y = AQ_foxa1, fill = tratamiento)) +
+  geom_boxplot(outlier.color = "black", outlier.size = 2, width = 0.7) +
+  labs(title = "Boxplot FOXA1", x = "Tratamiento", y = "Expresión FOXA1") +
+  scale_fill_manual(values = c("limegreen", "orangered")) +
+  geom_jitter(color = "black", width = 0.2) +
+  theme_minimal(base_size=8) +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+
+box_8 <- ggplot(df, aes(x = tratamiento, y = AQ_ccnd1, fill = tratamiento)) +
+  geom_boxplot(outlier.color = "black", outlier.size = 2, width = 0.7) +
+  labs(title = "Boxplot CCND1", x = "Tratamiento", y = "Expresión CCND1") +
+  scale_fill_manual(values = c("limegreen", "orangered")) +
+  geom_jitter(color = "black", width = 0.2) +
+  theme_minimal(base_size=8) +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+
+box_9 <- ggplot(df, aes(x = tratamiento, y = AQ_cdh1, fill = tratamiento)) +
+  geom_boxplot(outlier.color = "black", outlier.size = 2, width = 0.7) +
+  labs(title = "Boxplot CDH1", x = "Tratamiento", y = "Expresión CDH1") +
+  scale_fill_manual(values = c("limegreen", "orangered")) +
+  geom_jitter(color = "black", width = 0.2) +
+  theme_minimal(base_size=8) +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+
+box_10 <- ggplot(df, aes(x = tratamiento, y = AQ_tp53, fill = tratamiento)) +
+  geom_boxplot(outlier.color = "black", outlier.size = 2, width = 0.7) +
+  labs(title = "Boxplot TP53", x = "Tratamiento", y = "Expresión TP53") +
+  scale_fill_manual(values = c("limegreen", "orangered")) +
+  geom_jitter(color = "black", width = 0.2) +
+  theme_minimal(base_size=8) +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+
+# Combinamos todos los gráficos en uno solo utilizando la librería "patchwork".
+
+combined_box <- box_1 + box_2 + box_3 + box_4 + box_5 + box_6 + box_7 + box_8 + box_9 + box_10 + plot_layout(ncol = 3)
+```
+
+**BOXPLOT DE EXPRESIÓN DE GENES SEGÚN EL TRATAMIENTO**
+
+```{r pressure, echo=FALSE}
+# Generamos el gráfico.
+
+combined_box
+```
+
+
+***CONCLUSIONES BOXPLOT***
+
+La expresión en todos los genes analizados es significativamente mayor en el tratamiento placebo (naranja) que en el grupo de fármaco (verde).
+
+El grupo fármaco muestra valores cercanos a cero en la mayoría de los casos, lo que sugiere una represión o inhibición de la expresión génica debida al tratamiento.Para el grupo placebo se obtiene una alta expresión génica producida por la ausencia del efecto inhibitorio. Parece que el fármaco reduce de forma drástica la expresión de los genes asociados.
+
+Los puntos del grupo fármaco están muy concentrados cercanos al 0 y presentan una distribución uniforme, ya que están muy concentrados y juntos entre sí, por lo que no tienen casi dispersión vertical. En cambio los puntos del grupo placebo presentan también una dispersión es baja, pero mayor que en el grupo fármaco, pero están agrupados en valores altos entre 0,6 y 0,9, aunque no se reflejan puntos con valores atípicos.
+
+Los bigotes del grupo fármaco son muy cortos, indicando baja variabilidad entre las muestras y que los datos son homogéneos. Al contrario, el grupo placebo muestra bigotes más largos que señalan mayor variabilidad y, en consecuencia, mayor heterogeneidad. De esto se puede deducir que la expresión de los genes en el grupo placebo fluctúan más entre los individuos y con el fármaco reduce y homogeneiza la expresión genética.
+
+Debido a que estos genes tratados están relacionados con la enfermedad del cáncer,podría indicar que el fármaco tiene un efecto antitumoral o antiproliferativo que suprime su expresión. Por el contrario, el grupo placebo mantiene niveles elevados de expresión que puede ser debido a la falta de intervención terapéutica.
+Por lo tanto, parece que el fármaco ejerce una regulación negativa coordinada sobre estos genes, desempeñando una regulación negativa coordinada sobre estos genes.
+
+
+
+## Ejercicio 2
+
+En este ejercicio se van a realizar histogramas para visualizar la frecuencia de los siguientes parámetros bioquímicos: glucosa, leucocitos, linfocitos, neutrofilos, chol, hdl, hierro, igA, igE, igG", igN, ldl, pcr, transferrina, trigliceridos, cpk.
+Con los resultados obtenidos, se va a interpretrar la distribución de los datos por cada variable en función del tipo de distribución que se obtenga: normal o asimétrica.
+
+**HISTOGRAMAS FRECUENCIAS DE MARCADORES BIOQUÍMICOS**
+
+
+```{r cars3}
+# Seleccionamos los datos a tratar y los ubicamos en los ejes del gráfico.
+
+hist_1 <- ggplot(df, aes(x = glucosa)) +
+  
+# Creamos el histograma.
+  
+  geom_histogram(aes(y = ..density..), color = "black", fill= "white", alpha = 0.4, position = "identity", bins = 30)+
+  
+# Título de los ejes.
+  
+  labs(title = "Distribución de glucosa", x = "Glucosa", y = "Frecuencia") +
+  
+# Creamos la escala del eje X  .
+  
+  scale_x_continuous(breaks = seq(0, 210, by = 50)) + # Etiquetas cada 50 unidades
+  
+# Generamos un gráfico limpio.
+  
+  theme_classic() +
+  
+# Personalizamos el título del gráfico.
+  
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))+
+  
+# Añadimos al gráfico añadir curva de densidad suavizada.
+  
+  geom_density(lwd = 1, colour = 4, fill = 4, alpha = 0.25)
+  
+  
+
+#Generamos el gráfico.
+
+hist_1
+```
+
+
+```{r cars4}
+# Intrucciones para generar todos los histogramas por cada marcador bioquímico.
+
+hist_2 <- ggplot(df, aes(x = leucocitos)) +
+  geom_histogram(aes(y = ..density..), color = "black", fill= "white", alpha = 0.4, position = "identity", bins = 30) +
+  labs(title = "Distribución de leucocitos", x = "Leucocitos", y = "Frecuencia") +
+  scale_x_continuous(breaks = seq(0, 25, by = 5)) + # Etiquetas cada 5 unidades
+  theme_classic() +
+  theme(,plot.title = element_text(hjust = 0.5, face = "bold"))+
+  geom_density(lwd = 1, colour = 4, fill = 4, alpha = 0.25)
+
+hist_2
+```
+
+
+```{r cars5}
+hist_3 <- ggplot(df, aes(x = linfocitos)) +
+  geom_histogram(aes(y = ..density..), color = "black", fill= "white", alpha = 0.4, position = "identity", bins = 30) +
+  labs(title = "Distribución de linfocitos", x = "Linfocitos", y = "Frecuencia") +
+  scale_x_continuous(breaks = seq(0, 5, by = 1)) + # Etiquetas cada 1 unidad
+  theme_classic() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))+
+  geom_density(lwd = 1, colour = 4, fill = 4, alpha = 0.25)
+
+hist_3
+```
+
+
+```{r cars6}
+hist_4 <- ggplot(df, aes(x = neutrofilos)) +
+  geom_histogram(aes(y = ..density..), color = "black", fill= "white", alpha = 0.4, position = "identity", bins = 30) +
+  labs(title = "Distribución de neutrofilos", x = "Neutrofilos", y = "Frecuencia") +
+  scale_x_continuous(breaks = seq(0, 20, by = 5)) + # Etiquetas cada 5 unidades
+  theme_classic() +
+  theme(, plot.title = element_text(hjust = 0.5, face = "bold"))+
+  geom_density(lwd = 1, colour = 4, fill = 4, alpha = 0.25)
+
+hist_4
+```
+
+
+```{r cars7}
+hist_5 <- ggplot(df, aes(x = chol)) +
+  geom_histogram(aes(y = ..density..), color = "black", fill= "white", alpha = 0.4, position = "identity", bins = 30) +
+  labs(title = "Distribución de colesterol", x = "Colesterol", y = "Frecuencia") +
+  scale_x_continuous(breaks = seq(0, 300, by = 50)) + # Etiquetas cada 50 unidades
+  theme_classic() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))+
+  geom_density(lwd = 1, colour = 4, fill = 4, alpha = 0.25)
+
+hist_5
+```
+
+
+```{r cars8}
+hist_6 <- ggplot(df, aes(x = hdl)) +
+  geom_histogram(aes(y = ..density..), color = "black", fill= "white", alpha = 0.4, position = "identity", bins = 30) +
+  labs(title = "Distribución de HDL", x = "HDL", y = "Frecuencia") +
+  scale_x_continuous(breaks = seq(0, 110, by = 20)) + # Etiquetas cada 20 unidades
+  theme_classic() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))+
+  geom_density(lwd = 1, colour = 4, fill = 4, alpha = 0.25)
+
+hist_6
+```
+
+
+```{r cars9}
+hist_7 <- ggplot(df, aes(x = hierro)) +
+  geom_histogram(aes(y = ..density..), color = "black", fill= "white", alpha = 0.4, position = "identity", bins = 30) +
+  labs(title = "Distribución de Hierro", x = "Hierro", y = "Frecuencia") +
+  scale_x_continuous(breaks = seq(0, 210, by = 20)) + # Etiquetas cada 50 unidades
+  theme_classic() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))+
+  geom_density(lwd = 1, colour = 4, fill = 4, alpha = 0.25)
+
+hist_7
+```
+
+
+```{r cars10}
+hist_8 <- ggplot(df, aes(x = iga)) +
+  geom_histogram(aes(y = ..density..), color = "black", fill= "white", alpha = 0.4, position = "identity", bins = 30) +
+  labs(title = "Distribución de igA", x = "Inmunoglobulina A", y = "Frecuencia") +
+  scale_x_continuous(breaks = seq(0, 500, by = 100)) + # Etiquetas cada 100 unidades
+  theme_classic() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))+
+  geom_density(lwd = 1, colour = 4, fill = 4, alpha = 0.25)
+
+hist_8
+```
+
+
+```{r cars11}
+hist_9 <- ggplot(df, aes(x = ige)) +
+  geom_histogram(aes(y = ..density..), color = "black", fill= "white", alpha = 0.4, position = "identity", bins = 30) +
+  labs(title = "Distribución de igE", x = "Inmunoglobulina E", y = "Frecuencia") +
+  scale_x_continuous(breaks = seq(0, 400, by = 100)) + # Etiquetas cada 100 unidades
+  theme_classic() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))+
+  geom_density(lwd = 1, colour = 4, fill = 4, alpha = 0.25)
+
+hist_9
+```
+
+
+```{r cars12}
+
+hist_10 <- ggplot(df, aes(x = igg)) +
+  geom_histogram(aes(y = ..density..), color = "black", fill= "white", alpha = 0.4, position = "identity", bins = 30) +
+  labs(title = "Distribución de igG", x = "Inmunoglobulina G", y = "Frecuencia") +
+  scale_x_continuous(breaks = seq(0, 1600, by = 300)) + # Etiquetas cada 300 unidades
+  theme_classic() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))+
+  geom_density(lwd = 1, colour = 4, fill = 4, alpha = 0.25)
+
+hist_10
+```
+
+
+```{r cars13}
+hist_11 <- ggplot(df, aes(x = ign)) +
+  geom_histogram(aes(y = ..density..), color = "black", fill= "white", alpha = 0.4, position = "identity", bins = 30) +
+  labs(title = "Distribución de igN", x = "Inmunoglobulina N", y = "Frecuencia") +
+  scale_x_continuous(breaks = seq(0, 300, by = 100)) + # Etiquetas cada 100 unidades
+  theme_classic() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))+
+  geom_density(lwd = 1, colour = 4, fill = 4, alpha = 0.25)
+
+hist_11
+```
+
+
+```{r cars14}
+hist_12 <- ggplot(df, aes(x = ldl)) +
+  geom_histogram(aes(y = ..density..), color = "black", fill= "white", alpha = 0.4, position = "identity", bins = 30) +
+  labs(title = "Distribución de LDL", x = "LDL", y = "Frecuencia") +
+  scale_x_continuous(breaks = seq(0, 500, by = 100)) + # Etiquetas cada 100 unidades
+  theme_classic() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))+
+  geom_density(lwd = 1, colour = 4, fill = 4, alpha = 0.25)
+
+hist_12
+```
+
+
+```{r cars15}
+hist_13 <- ggplot(df, aes(x = pcr)) +
+  geom_histogram(aes(y = ..density..), color = "black", fill= "white", alpha = 0.4, position = "identity", bins = 30) +
+  labs(title = "Distribución de PCR", x = "PCR", y = "Frecuencia") +
+  scale_x_continuous(breaks = seq(0, 200, by = 50)) + # Etiquetas cada 50 unidades
+  theme_classic() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))+
+  geom_density(lwd = 1, colour = 4, fill = 4, alpha = 0.25)
+
+hist_13
+```
+
+
+```{r cars16}
+hist_14 <- ggplot(df, aes(x = transferrina)) +
+  geom_histogram(aes(y = ..density..), color = "black", fill= "white", alpha = 0.4, position = "identity", bins = 30) +
+  labs(title = "Distribución de Transferrina", x = "Transferrina", y = "Frecuencia") +
+  scale_x_continuous(breaks = seq(0, 350, by = 150)) + # Etiquetas cada 150 unidades
+  theme_classic() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))+
+  geom_density(lwd = 1, colour = 4, fill = 4, alpha = 0.25)
+
+hist_14
+```
+
+
+```{r cars17}
+hist_15 <- ggplot(df, aes(x = trigliceridos)) +
+  geom_histogram(aes(y = ..density..), color = "black", fill= "white", alpha = 0.4, position = "identity", bins = 30) +
+  labs(title = "Distribución de Triglicéridos", x = "Trigliceridos", y = "Frecuencia") +
+  scale_x_continuous(breaks = seq(0, 300, by = 100)) + # Etiquetas cada 100 unidades
+  theme_classic() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))+
+  geom_density(lwd = 1, colour = 4, fill = 4, alpha = 0.25)
+
+hist_15
+```
+
+*Distribución de CPK*
+
+```{r cars18}
+hist_16 <- ggplot(df, aes(x = cpk)) +
+  geom_histogram(aes(y = ..density..), color = "black", fill= "white", alpha = 0.4, position = "identity", bins = 30) +
+  labs(title = "Distribución de Creatina fosfoquinasa", x = "Creatina fosfoquinasa", y = "Frecuencia") +
+  scale_x_continuous(breaks = seq(0, 200, by = 50)) + # Etiquetas cada 50 unidades
+  theme_classic() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))+
+  geom_density(lwd = 1, colour = 4, fill = 4, alpha = 0.25)
+
+hist_16
+```
+
+
+***CONCLUSIONES HISTOGRAMAS***
+
+La distribución de los datos, en general, revela que la mayoría están concentrados en un rango "habitual", pero que en todos ellos se pueden presentar manifestaciones menos frecuentes o atípicas.
+
+Los histogramas para los parámetros bioquímicos de glucosa, leucocitos, neutrófilos, hdl, hierro, igA, igE, igN, ldl, pcr, triglicéridos y cpk, presentan una distribución de la densidad en forma de campana asimétrica positiva con un sesgo hacia la derecha que se extiende hacia valores más altos por algunos valores menos frecuentes, por lo que la distribución no es normal y no se asemeja a la campana de Gauss. Esto sugiere que la mayoria de las muestras tienen valores en rangos normales y algunos individuos presentan niveles de estos marcadores bioquímicos elevados más elevados, siendo menos frecuentes pero posibles.
+
+El resto de parámetros, colesterol, igG y transferrina, presentan una distribución de la densidad con forma muy cercana a una campana simétrica que se asemeja a la campana de Gauss, por lo que se podría indicar que muestran una distribución normal, aunque no son perfectamente simétricas. Estos indicadores también revelan una ligera cola hacia la derecha y hacia la izquiera con valores menos frecuentes. Se observan ligeras asimetrías positivas y negativas hacia valores más altos y más bajos, por lo que la distribución de los valores es algo más extendida en ambos lados de la campana.
+
+
+
+## Ejercicio 3
+
+Por último, se va a mapear los valores de expresión de todos los genes para mostrar patrones entre los datos de los individuos mediante un heatmap, en el cual, se visualicen los datos crudos de todas las variables AQ
+
+**MAPA DE CALOR**
+
+
+```{r cars19}
+# Librería que se utiliza para generar el mapa de calor.
+
+library(pheatmap)
+
+# Selecionamos las variables de interés
+
+bioquimica <- df %>% select(starts_with("AQ_"))
+
+# Escalamos los datos para cada gen.
+
+bioquimica_escaled <- scale (bioquimica, center= TRUE, scale = TRUE)
+
+# Transponemos para que los genes estén en el eje y.
+
+bio_e <- t(bioquimica_escaled)
+
+# Generamos una semilla para la generación aleatoria de los datos y que el resultado final del gráfico sea siempre el mismo.
+
+set.seed(1995)
+
+# Generamos el mapa de calor.
+
+pheatmap (bio_e,
+      
+         
+# Título del gráfico
+
+      main = "Expresión de genes",
+
+# Agrupamos en grupos los genes.
+        
+        cluster_cols = 3,
+
+# Agrupamos en grupos las muestras.
+
+        cluster_rows = 8,
+
+# Mostramos las etiquetas de los ejes.
+
+        show_row_names=TRUE,
+        show_column_names=TRUE,
+      
+# Color diferenciado para los resultados.
+
+        color = colorRampPalette(c("blue", "white", "red"))(100))
+```
+
+
+***CONCLUSIONES HEATMAP***
+
+El color azul del gráfico representa una expresón genética baja y el color rojo simboliza una expresión génica alta.
+
+En el lado izquierdo del gráfico se observa un grupo de pacientes con baja expresión genética en la mayoría de los genes estudiados. Esto significa que este grupo es homogéneo y presenta poca variabilidad interna, lo cual sugiere que estos individuos presentan una baja actividad tumoral y que tienen un estado inmune suprimido, con baja presencia de inflitrado inmune donde los tumores están silenciados.
+
+A su lado aparece otro grupo de pacientes con expresión baja en dos conjuntos de genes de la parte inferior del gráfico, desde el gen FOXA1 hasta el último gen TNF, mientras que en la parte superior muestra un conjunto de genes con expresión genética alta desde desde el gen MMP9 hasta el gen AKT1.
+
+A continuación, hacia la derecha, aparece otro grupo de pacientes que aparecen con la expresión genética al contrario que el grupo anterior, es decir, alta expresión desde el gen FOXA1 hasta el gen TNF y baja expresión desde el gen MMP9 hasta el gen AKT1.
+
+Seguido viene otros dos grupos donde aparece una expresión génica muy heterógenea desde el gen B2M hasta el gen GNF. Uno de ellos presenta una expresión baja para el resto de genes, y el otro grupo una expresión baja desde el gen MMP9 hasta el gen AKT1 y una expresion alta desde el gen FOXA1 hasta el gen GATA3.
+
+Por último, en los grupos más a la derecha, muestran bastante heterogeneidad en los genes de la parte inferior, desde B2M hasta GNF. El de más a la derecha expone, en general, una alta expresión en los genes superiores desde MMP9 hasta AKT1, y una baja expresión desde FOXA1 hasta GATA3. El otro presenta una expresión alta desde el gen MMp9 hasta el gen GATA3.
+
+Por como se distribuyen los genes según su expresión, se pueden describir tres grupos de genes.
+
+  1.  Un grupo estaría formado por los genes MMP9, CTLA4, MYC, CASP3, CDKN2A, PDCD1, HLAA, PTEN,       KRA y AKT1. Este grupo de genes están asociados a tumores, definidos por un fenotipo            inmuno-proliferativo, es decir, tienen funciones regulatorias como la proliferación y la        muerte celular,la respuesta inmunitaria, las rutas de señalización, y la metástasis,            siendo altamente inmunogénicos.
+
+  2.  Otro grupo lo conformarían los genes FOXA1, HER2, CDH1, ESR1, MKI67, CCND1, TP53, BRCA1,        BRCA2 y GATA3. Este conjunto de genes regulan la proliferación, el ciclo celular, el            crecimiento tumoral y la diferenciación epitelial. También intervienen en la reparación de       ADN, lay estabilidad genómica y la regulación hormonal.Por lo tanto, son claves en la           enfermedad de cáncer de mama.
+  
+  3.  El último grupo estaría configurado por los genes B2M, GAPDH, IL6, EGFR, CXCL8, RPL13A,         HPRT1, VEGFA, ACTB y TNF. Estos genes participan en procesos inflamatorios y de respuesta       inmune, forman parte de rutas de crecimiento (angiogénesis), supervivencia y señalización       celular, y están relacionados con el microambiente tumoral
+
