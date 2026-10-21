@@ -1,8 +1,8 @@
 ##############################################################################
 ##############################################################################
 ###                                                                        ###
-### ACTIVIDAD GRUPAL 3. ANALISIS CONJUNTO DATOS ORIGEN BIOLOGICO MEDIANTE  ###
-### MEDIANTE TECNICAS DE MACHINE LEARNING SUPERVISADAS Y NO SUPERVISADAS   ###
+###         ANALISIS CONJUNTO DATOS ORIGEN BIOLOGICO MEDIANTE              ###
+###      TECNICAS DE MACHINE LEARNING SUPERVISADAS Y NO SUPERVISADAS       ###
 ###                                                                        ###
 ##############################################################################
 ##############################################################################
