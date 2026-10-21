@@ -1,5 +1,5 @@
 ---
-title: "Resolución Actividad 3 máster Bioinformática UNIR (2025)"
+title: "Bioestadistica aplicada a la expresión génica"
 author: "Grupo 12"
 date: "`r Sys.Date()`"
 output: html_document
