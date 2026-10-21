@@ -1,5 +1,5 @@
 ---
-title: "Resolución Actividad 2 máster Bioinformática UNIR (2025)"
+title: "Bioestadística descriptiva"
 author: "Pedro Manuel Rodríguez Santos"
 date: "2025-12-14"
 output: html_document
