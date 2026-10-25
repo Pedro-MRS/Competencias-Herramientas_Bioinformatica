@@ -1,5 +1,4 @@
 "Repositorio de Recursos y Herramientas para Bioinformática"
-output: github_document
 
 🧬 Repositorio de Bioinformática, Quimioinformática y Modelado Predictivo
 
