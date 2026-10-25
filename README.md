@@ -32,7 +32,7 @@ Visualización y manipulación estructural de moléculas.
 
 ## 🐍 Python
 
-### Librerías Base del Sistema y cálculo
+### <u>Librerías Base del Sistema y cálculo</u>
 
 ***os / sys***: Gestión e interacción con el sistema operativo, manipulación de rutas de archivos y argumentos del sistema.
 
@@ -40,17 +40,17 @@ Visualización y manipulación estructural de moléculas.
 
 ***re***: Manejo de expresiones regulares para búsqueda y formateo de patrones en secuencias o archivos de texto biológico.
 
-### Análisis y estructuración de datos
+### <u>Análisis y estructuración de datos</u>
 
 ***numpy***: Computación numérica de alto rendimiento basada en arreglos multidimensionales (arrays).
 
 ***pandas***: Estructuras de datos flexibles (DataFrames) para manipulación, filtrado, limpieza y transformación de datos tabulares.
 
-### Visualización gráfica
+### <u>Visualización gráfica</u>
 
 ***matplotlib / seaborn***: Creación de gráficos estáticos, vectoriales e interactivos (histogramas, dispersión, mapas de calor).
 
-### Obtención de datos químicos y biológicos via APIs
+### <u>Obtención de datos químicos y biológicos via APIs</u>
 
 ***requests***: Módulo para la extracción web de datos a través de peticiones HTTP RESTful.
 
@@ -62,7 +62,7 @@ Visualización y manipulación estructural de moléculas.
 
 ***ChEMBL / PubChem / ChEBI***: Consultas de moléculas pequeñas, propiedades bioactivas y relaciones estructura-actividad.
 
-### Bioinformática y quimioinformática
+### <u>Bioinformática y quimioinformática</u>
 
 **Biopython:**
 
@@ -76,7 +76,7 @@ Visualización y manipulación estructural de moléculas.
 
 ## 📊 Entorno de programación R y Bioconductor
 
-### Manipulación, lectura y tablas
+### <u>Manipulación, lectura y tablas</u>
 
 ***dplyr / tidyr / readr***: Modificación, filtrado, pivoteo, limpieza y lectura rápida de conjuntos de datos.
 
@@ -84,27 +84,27 @@ Visualización y manipulación estructural de moléculas.
 
 ***caret***: Pipeline unificado para el preprocesamiento de datos y modelado predictivo.
 
-### Visualización avanzada
+### <u>Visualización avanzada</u>
 
 ***ggplot2***: Implementación de la gramática de gráficos para generar:
 
-### Histogramas, boxplots, heatmaps y volcanoplots (para análisis de expresión diferencial).
+### <u>Histogramas, boxplots, heatmaps y volcanoplots (para análisis de expresión diferencial)</u>
 
 ***patchwork / pheatmap / gridExtra***: Combinación de paneles de gráficos y personalización de mapas de calor complejos.
 
-### Bioestadística y diagnóstico
+### <u>Bioestadística y diagnóstico</u>
 
 ***nortest / psych / stats / moments / car / broom / performance***: Pruebas de normalidad, análisis multivariante, modelos lineales, asimetría, curtosis y diagnóstico de modelos.
 
 ***pROC***: Análisis y visualización de curvas ROC y cálculo del Área Bajo la Curva (AUC).
 
-### Bioconductor
+### <u>Bioconductor</u>
 
 Marco de trabajo especializado en el análisis estadístico e integración de datos genómicos de alto rendimiento (arrays, RNA-Seq, ChIP-Seq, etc.).
 
 ## 🌐 Bases de Datos genómicas, bioquímicas y herramientas No-Code
 
-### Bases genómicas y funcionales
+### <u>Bases genómicas y funcionales</u>
 
 ***EBI (ENA, Ensembl, VEP)***: Archivos de secuencias de nucleótidos, anotación de genomas y predicción del impacto de variantes (Variant Effect Predictor).
 
@@ -114,17 +114,17 @@ Marco de trabajo especializado en el análisis estadístico e integración de da
 
 ***KEGG / GeneOntology (GO)***: Rutas metabólicas, redes funcionales y ontologías de procesos biológicos/componentes celulares.
 
-### Recursos para anotación de variantes y biología humana
+### <u>Recursos para anotación de variantes y biología humana</u>
 
 ***UK Biobank / Orphanet / COSMIC / The Human Protein Atlas / 1000 Genomes / gnomAD***: Estudios de asociación a escala genómica (GWAS), enfermedades raras, genómica del cáncer, localización celular de proteínas y frecuencias alélicas poblacionales.
 
-### Herramientas de In Silico Pathogenicity:
+### <u>Herramientas de In Silico Pathogenicity</u>
 
 ***SIFT / PolyPhen-2 / MutationTaster***: Algoritmos predictivos sobre el impacto funcional y la nocividad de variaciones aminoacídicas o nucleotídicas.
 
 ***mtDNA***: Análisis específico del genoma mitocondrial.
 
-### Alineamiento, predicción de genes
+### <u>Alineamiento, predicción de genes</u>
 
 ***Clustal Omega / COBALT / MUSCLE***: Herramientas de alineamiento múltiple de secuencias (MSA).
 
@@ -148,7 +148,7 @@ Marco de trabajo especializado en el análisis estadístico e integración de da
 
 ## 🤖 Machine Learning y Deep Learning
 
-### Aprendizaje Automático (Scikit-learn)
+### <u>Aprendizaje Automático (Scikit-learn)</u>
 
 **Métodos No Supervisados (Reducción de Dimensionalidad y Agrupamiento):**
 
@@ -164,7 +164,7 @@ Marco de trabajo especializado en el análisis estadístico e integración de da
 
 Validación cruzada, ajuste de hiperparámetros, métricas de rendimiento y preprocesamiento de conjuntos de datos.
 
-Aprendizaje Profundo (***TensorFlow & PyTorch***)
+**Aprendizaje Profundo** (***TensorFlow & PyTorch***)
 
 Redes Neuronales: Diseño, construcción y entrenamiento de arquitecturas profundas (CNNs, RNNs) aplicadas a la predicción de estructuras de proteínas, visión computacional en imágenes médicas y modelos del lenguaje biológico.
 
@@ -176,15 +176,15 @@ Redes Neuronales: Diseño, construcción y entrenamiento de arquitecturas profun
 
 ***QIIME2***: Framework bioinformático extensible para el análisis de datos de secuencias microbiómicas (Metagenómica 16S/ITS).
 
-## ✂️ Herramientas de Análisis Bioinformático y NGS
+## ✂️ Herramientas de Análisis Bioinformático
 
-### Control de calidad y trimming:
+### <u>Control de calidad y trimming</u>
 
 ***FastQC / Fastp***: Control de calidad visual y estadístico de lecturas FASTQ.
 
 ***Trimmomatic***: Eliminación de adaptadores y filtrado por calidad de secuencias.
 
-### Mapeo, ensamble y caracterización:
+### <u>Mapeo, ensamble y caracterización</u>
 
 ***Bowtie2***: Alineamiento rápido de lecturas de secuenciación contra genomas de referencia.
 
