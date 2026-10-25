@@ -1,10 +1,8 @@
-"Repositorio de Recursos y Herramientas para Bioinformática"
-
-🧬 Repositorio de Bioinformática, Quimioinformática y Modelado Predictivo
+# "Repositorio de Recursos y Herramientas para Bioinformática"
 
 Este repositorio reúne el conjunto de tecnologías, librerías, herramientas bioinformáticas, bases de datos y algoritmos de análisis de datos biológicos y químicos aplicados en el marco del Máster en Bioinformática.
 
-📑 Tabla de Contenidos
+## 📑 Tabla de Contenidos
 
 Entornos de Desarrollo e IDEs
 
@@ -24,7 +22,7 @@ Herramientas de Análisis Bioinformático y NGS
 
 Visualización y Manipulación Estructural
 
-💻 Entornos de Desarrollo e IDEs
+## 💻 Entornos de Desarrollo e IDEs
 
 Jupyter Notebook / Google Colab: Entornos interactivos basados en la nube y locales para prototipado rápido, ejecución por celdas y documentación reproducible de análisis de datos.
 
@@ -32,7 +30,7 @@ VS Code / Spyder: IDEs avanzados para Python con herramientas integradas de depu
 
 RStudio: Entorno de desarrollo integrado especializado para el análisis estadístico y la generación de informes gráficos en R.
 
-🐍 Ecosistema Python
+## 🐍 Python
 
 Librerías Base del Sistema y Cálculo
 
@@ -76,7 +74,7 @@ Bio.Entrez: Conexión automatizada a los servicios Web de NCBI (PubMed, GenBank,
 
 RDKit: Toolkit de quimioinformática para el procesamiento, análisis y generación de representaciones 2D/3D de moléculas en múltiples formatos (MOL, SMILES, SMARTS, SDF, InChI, InChIKey).
 
-📊 Entorno de Programación R y Bioconductor
+## 📊 Entorno de Programación R y Bioconductor
 
 Manipulación, Lectura y Tablas
 
@@ -104,7 +102,7 @@ Ecosistema Bioconductor
 
 Marco de trabajo especializado en el análisis estadístico e integración de datos genómicos de alto rendimiento (arrays, RNA-Seq, ChIP-Seq, etc.).
 
-🌐 Bases de Datos Genómicas, Bioquímicas y Herramientas No-Code
+## 🌐 Bases de Datos Genómicas, Bioquímicas y Herramientas No-Code
 
 Depósitos Genómicos y Funcionales
 
@@ -134,7 +132,7 @@ GENSCAN / ORFfinder: Algoritmos para la predicción de genes de novo y búsqueda
 
 Galaxy: Plataforma interactiva y accesible (No-Code) basada en web para el procesamiento reproducible de datos biomédicos.
 
-🛢️ Gestión de Bases de Datos Relacionales (MySQL)
+## 🛢️ Gestión de Bases de Datos Relacionales (MySQL)
 
 Modelo Entidad–Relación (E-R): Diseño conceptual y lógico de esquemas de datos relacionales para bioinformática.
 
@@ -146,7 +144,7 @@ DML (Data Manipulation Language): Insert, Update, Delete y selección avanzada d
 
 DCL (Data Control Language) y Transacciones: Gestión de permisos de usuarios, control de accesos y mantenimiento de la integridad de los datos (Commit/Rollback).
 
-🤖 Machine Learning y Deep Learning
+## 🤖 Machine Learning y Deep Learning
 
 Aprendizaje Automático (Scikit-learn)
 
@@ -168,15 +166,15 @@ Aprendizaje Profundo (TensorFlow & PyTorch)
 
 Redes Neuronales: Diseño, construcción y entrenamiento de arquitecturas profundas (CNNs, RNNs) aplicadas a la predicción de estructuras de proteínas, visión computacional en imágenes médicas y modelos del lenguaje biológico.
 
-🐧 Entornos Bash / Linux, Perl y QIIME2
+## 🐧 Entornos Bash / Linux, Perl y QIIME2
 
 Linux / Bash Scripting: Automatización de tareas en línea de comandos, procesamiento masivo de texto mediante flujos (pipelines) y gestión de procesos en servidor.
 
-Perl: Lenguaje tradicional utilizado en bioinformática para el parseo y manipulación rápida de archivos de texto estructurado.
+Perl: ## Lenguaje tradicional utilizado en bioinformática para el parseo y manipulación rápida de archivos de texto estructurado.
 
 QIIME2: Framework bioinformático extensible para el análisis de datos de secuencias microbiómicas (Metagenómica 16S/ITS).
 
-✂️ Herramientas de Análisis Bioinformático y NGS
+## ✂️ Herramientas de Análisis Bioinformático y NGS
 
 Control de Calidad y Trimming:
 
@@ -200,6 +198,6 @@ MAFFT: Alineamiento de secuencias múltiples de alta velocidad.
 
 DESeq2: Análisis estadístico de expresión génica diferencial a partir de datos de contajes (RNA-Seq).
 
-🔬 Visualización y Manipulación Estructural
+## 🔬 Visualización y Manipulación Estructural
 
 PyMOL: Software especializado en la renderización 3D, inspección de interacciones ligando-proteína, mutogénesis in silico y generación de figuras de calidad para publicación.
