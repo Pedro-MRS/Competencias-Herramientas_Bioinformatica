@@ -32,7 +32,7 @@ Visualización y manipulación estructural de moléculas.
 
 ## 🐍 Python
 
-### <u>Librerías Base del Sistema y cálculo</u>
+### <u> Librerías Base del Sistema y cálculo </u>
 
 ***os / sys***: Gestión e interacción con el sistema operativo, manipulación de rutas de archivos y argumentos del sistema.
 
